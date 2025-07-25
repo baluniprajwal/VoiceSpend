@@ -1,9 +1,7 @@
 import express from "express";
 import cors from "cors";
 import axios from "axios";
-import dotenv from "dotenv";
-
-dotenv.config();
+import "dotenv/config";
 
 const app = express();
 app.use(cors());
@@ -18,7 +16,7 @@ app.post("/transcribeAndParse", async (req, res) => {
       return res.status(400).json({ error: "No audio data received" });
     }
 
-    // Call Deepgram API
+    
     const deepgramRes = await axios.post(
       "https://api.deepgram.com/v1/listen?punctuate=true",
       audioBuffer,
