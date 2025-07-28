@@ -35,15 +35,28 @@ app.post("/transcribeAndParse", async (req, res) => {
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: transcript,
-      config: {
-        systemInstruction:
-          'You are a helpful expense parser. Extract amount and category from the text. Respond ONLY in JSON like {"amount": 120, "category": "food"}.',
-      },
+      contents: [
+        {
+          role: "system",
+          parts: [
+            {
+              text:
+                `You are a helpful expense parser. Extract amount and category from the text. Respond ONLY in JSON like {"amount": 120, "category": "food"}.`
+            },
+          ],
+        },
+        {
+          role: "user",
+          parts: [
+            {
+              text: transcript,
+            },
+          ],
+        },
+      ],
     });
-    const geminiText = response.text;
+    const geminiText = await response.response.text();
     console.log("Gemini response:", geminiText);
-
     let parsed = {};
     try {
       parsed = JSON.parse(geminiText);
