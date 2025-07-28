@@ -2,12 +2,12 @@ import express from "express";
 import cors from "cors";
 import axios from "axios";
 import "dotenv/config";
-
+import { GoogleGenAI } from "@google/genai";
 const app = express();
 app.use(cors());
 app.use(express.raw({ type: "audio/wav", limit: "10mb" })); 
 
-
+const ai = new GoogleGenAI({apiKey : process.env.GEMINI_API_KEY});
 
 app.post("/transcribeAndParse", async (req, res) => {
   try {
@@ -33,41 +33,30 @@ app.post("/transcribeAndParse", async (req, res) => {
 
     console.log("Transcript:", transcript);
 
-    
-    const openaiRes = await axios.post(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        model: "gpt-3.5-turbo",
-        messages: [
-          { role: "system", content: "You are a helpful expense parser." },
-          {
-            role: "user",
-            content: `Extract amount and category from: "${transcript}". Respond ONLY in JSON like {"amount": 120, "category": "food"}`,
-          },
-        ],
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: transcript,
+      config: {
+        systemInstruction:
+          'You are a helpful expense parser. Extract amount and category from the text. Respond ONLY in JSON like {"amount": 120, "category": "food"}.',
       },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    const responseText = openaiRes.data.choices?.[0]?.message?.content;
+    });
+    const geminiText = response.text;
+    console.log("Gemini response:", geminiText);
 
     let parsed = {};
     try {
-      parsed = JSON.parse(responseText);
-    } catch (jsonErr) {
-      console.error("Failed to parse OpenAI response JSON:", jsonErr);
-      return res.status(500).json({ error: "Failed to parse OpenAI response" });
+      parsed = JSON.parse(geminiText);
+    } catch (error) {
+      console.error("Failed to parse Gemini response JSON:", error);
+      return res.status(500).json({ error: "Failed to parse Gemini response" });
     }
 
     res.status(200).json({
       transcript,
       parsed,
     });
+
   } catch (err) {
     console.error("Server error:", err);
     res.status(500).json({ error: err.message || "Internal server error" });
