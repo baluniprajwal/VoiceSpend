@@ -37,24 +37,16 @@ app.post("/transcribeAndParse", async (req, res) => {
       model: "gemini-2.5-flash",
       contents: [
         {
-          role: "system",
-          parts: [
-            {
-              text:
-                `You are a helpful expense parser. Extract amount and category from the text. Respond ONLY in JSON like {"amount": 120, "category": "food"}.`
-            },
-          ],
-        },
-        {
           role: "user",
           parts: [
             {
-              text: transcript,
+              text: `You are a helpful expense parser. Extract amount and category from the text. Respond ONLY in JSON like {"amount": 120, "category": "food"}.\n\nText: ${transcript}`,
             },
           ],
         },
       ],
     });
+
     const geminiText = await response.response.text();
     console.log("Gemini response:", geminiText);
     let parsed = {};
