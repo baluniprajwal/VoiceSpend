@@ -47,7 +47,7 @@ app.post("/transcribeAndParse", async (req, res) => {
       ],
     });
 
-    const geminiText = await response.response.text();
+    const geminiText = response.candidates?.[0]?.content?.parts?.[0]?.text || "";
     console.log("Gemini response:", geminiText);
     let parsed = {};
     try {
