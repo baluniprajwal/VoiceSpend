@@ -3,7 +3,7 @@ import cors from "cors";
 import axios from "axios";
 import "dotenv/config";
 import { GoogleGenAI } from "@google/genai";
-import job from "./cron";
+import job from "./cron.js";
 const app = express();
 app.use(cors());
 job.start();
