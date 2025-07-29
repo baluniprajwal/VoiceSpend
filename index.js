@@ -3,8 +3,10 @@ import cors from "cors";
 import axios from "axios";
 import "dotenv/config";
 import { GoogleGenAI } from "@google/genai";
+import job from "./cron";
 const app = express();
 app.use(cors());
+job.start();
 app.use(express.raw({ type: "audio/wav", limit: "10mb" })); 
 
 const ai = new GoogleGenAI({apiKey : process.env.GEMINI_API_KEY});
