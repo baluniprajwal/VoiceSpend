@@ -50,9 +50,15 @@ app.post("/transcribeAndParse", async (req, res) => {
             3. "Transport & Travel" → fuel, uber, ola, metro, bus, train, flights, cabs  
             4. "Personal & Shopping" → clothing, electronics, personal care, gifts, shopping  
             5. "Other" → if it doesn't fit above
+            
+            Also generate a short clean **description** for user display (capitalize, proper punctuation).
 
-            Respond ONLY in valid JSON format like:
-            {"amount": 120, "category": "Essentials"}
+            Respond ONLY in this JSON format:
+            {
+              "amount": 120,
+              "category": "Essentials",
+              "description": "Paid 120 for groceries."
+            }
 
             Here is the transcribed text:
             "${transcript}"`,
