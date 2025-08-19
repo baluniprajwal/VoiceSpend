@@ -42,7 +42,20 @@ app.post("/transcribeAndParse", async (req, res) => {
           role: "user",
           parts: [
             {
-              text: `You are a helpful expense parser. Extract amount and category from the text. Respond ONLY in JSON like {"amount": 120, "category": "food"}.\n\nText: ${transcript}`,
+              text: `You are a helpful expense parser. 
+            From the given sentence, extract the **amount spent** and assign it to one of these **5 categories** ONLY:
+
+            1. "Essentials" → groceries, rent, electricity, internet, bills, water, household needs  
+            2. "Dining & Leisure" → food, restaurants, cafes, movies, bars, entertainment  
+            3. "Transport & Travel" → fuel, uber, ola, metro, bus, train, flights, cabs  
+            4. "Personal & Shopping" → clothing, electronics, personal care, gifts, shopping  
+            5. "Other" → if it doesn't fit above
+
+            Respond ONLY in valid JSON format like:
+            {"amount": 120, "category": "Essentials"}
+
+            Here is the transcribed text:
+            "${transcript}"`,
             },
           ],
         },
